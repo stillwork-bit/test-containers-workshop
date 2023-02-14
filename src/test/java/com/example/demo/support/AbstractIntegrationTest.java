@@ -31,6 +31,7 @@ import org.testcontainers.utility.MountableFile;
 })
 public class AbstractIntegrationTest {
 
+    //Шаг 5. Подготовка для автотеста RestAssured
     protected RequestSpecification requestSpecification;
 
     @LocalServerPort
@@ -38,7 +39,7 @@ public class AbstractIntegrationTest {
 
     static final GenericContainer redis = new GenericContainer("redis:6-alpine")
             .withExposedPorts(6379);
-
+    //Шаг 7. Добавление KafkaContainer
     static final KafkaContainer kafka = new KafkaContainer(
             DockerImageName.parse("confluentinc/cp-kafka:5.4.3"));
 
@@ -68,4 +69,15 @@ public class AbstractIntegrationTest {
                 )
                 .build();
     }
+
+    @Test
+    public void healthy() {
+        given(requestSpecification)
+                .when()
+                .get("/actuator/health")
+                .then()
+                .statusCode(200)
+                .log().ifValidationFails(LogDetail.ALL);
+    }
+
 }
